@@ -102,4 +102,8 @@ DESCRIPTION: 'hexagon'
 IF: ['the shape is hexagon', 'lines are all equal']
 THEN: 'the shape is regular hexagon'
 DESCRIPTION: 'regular hexagon'
+}{
+IF: ['']
+THEN: ''
+DESCRIPTION: ''
 }

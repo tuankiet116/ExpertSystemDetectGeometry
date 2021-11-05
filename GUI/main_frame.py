@@ -1,15 +1,3 @@
-#!/usr/bin/python
-# encoding:utf-8
-# -*- Mode: Python -*-
-# Author: Soros Liu <soros.liu1029@gmail.com>
-
-# ==================================================================================================
-# Copyright 2016 by Soros Liu
-#
-#                                                                          All Rights Reserved
-"""
-
-"""
 import wx
 import os
 import shape_items
@@ -19,8 +7,6 @@ import sys
 from rule_editor import EditorFrame
 sys.path.append('..')
 from engine.inference_engine import *
-__author__ = 'Soros Liu'
-
 
 def draw_lines(image, facts, contour_num):
     for i in range(contour_num):
@@ -83,30 +69,30 @@ class MainFrame(wx.Frame):
                                                           wx.MAXIMIZE_BOX))
         self.SetSize(size)
         self.Center()
-        self.sourceLabel = wx.StaticText(self, label='Source Image', pos=(150, 10), size=(40, 25))
-        self.detectionLabel = wx.StaticText(self, label='Detection Image', pos=(550, 10), size=(40, 25))
-        self.openPicButton = wx.Button(self, label='Open Image', pos=(830, 30), size=(150, 30))
+        self.sourceLabel = wx.StaticText(self, label='Ảnh nguồn', pos=(150, 10), size=(100, 30))
+        self.detectionLabel = wx.StaticText(self, label='Nhận diện hình ảnh', pos=(550, 10), size=(120, 30))
+        self.openPicButton = wx.Button(self, label='Mở ảnh', pos=(830, 40), size=(150, 30))
         self.openPicButton.Bind(wx.EVT_BUTTON, self.open_picture)
-        self.openEditorButton = wx.Button(self, label='Open Rule Editor', pos=(830, 70), size=(150, 30))
+        self.openEditorButton = wx.Button(self, label='Mở Trang Chỉnh Sửa Luật', pos=(830, 80), size=(150, 30))
         self.openEditorButton.Bind(wx.EVT_BUTTON, self.open_rule_editor)
-        self.showRuleButton = wx.Button(self, label='Show Rules', pos=(830, 110), size=(150, 30))
+        self.showRuleButton = wx.Button(self, label='Xem Luật', pos=(830, 120), size=(150, 30))
         self.showRuleButton.Bind(wx.EVT_BUTTON, self.show_rules)
-        self.showFactButton = wx.Button(self, label='Show Facts', pos=(830, 150), size=(150, 30))
+        self.showFactButton = wx.Button(self, label='Show Facts', pos=(830, 160), size=(150, 30))
         self.showFactButton.Bind(wx.EVT_BUTTON, self.show_facts)
-        self.treeLabel = wx.StaticText(self, label='What shape do you want', pos=(830, 200), size=(40, 25))
-        self.shapeTree = wx.TreeCtrl(self, pos=(830, 220), size=(160, 210))
+        self.treeLabel = wx.StaticText(self, label='Bạn muốn hình nào?', pos=(830, 210), size=(120, 30))
+        self.shapeTree = wx.TreeCtrl(self, pos=(830, 240), size=(160, 200))
         root = self.shapeTree.AddRoot('All Shapes')
         self.add_tree_nodes(root, shape_items.tree)
         self.shapeTree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.shape_chosen)
         self.shapeTree.Expand(root)
-        self.show_picture('init_source.png', (10, 30))
-        self.show_picture('init_detection.png', (420, 30))
-        self.resultLabel = wx.StaticText(self, label='Detection Result', pos=(100, 450), size=(40, 25))
-        self.resultText = wx.TextCtrl(self, pos=(10, 480), size=(310, 280), style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self.matchedFactLabel = wx.StaticText(self, label='Matched Facts', pos=(430, 450), size=(40, 25))
-        self.matchedFactText = wx.TextCtrl(self, pos=(340, 480), size=(310, 280), style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self.hitRuleLabel = wx.StaticText(self, label='Hit Rules', pos=(780, 450), size=(40, 25))
-        self.hitRuleText = wx.TextCtrl(self, pos=(670, 480), size=(310, 280), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.show_picture('init_source.png', (10, 40))
+        self.show_picture('init_detection.png', (420, 40))
+        self.resultLabel = wx.StaticText(self, label='Kết quả nhận diện', pos=(100, 460), size=(150, 30))
+        self.resultText = wx.TextCtrl(self, pos=(10, 490), size=(310, 280), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.matchedFactLabel = wx.StaticText(self, label='Facts đã khớp', pos=(430, 460), size=(100, 30))
+        self.matchedFactText = wx.TextCtrl(self, pos=(340, 490), size=(310, 280), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.hitRuleLabel = wx.StaticText(self, label='Theo luật', pos=(780, 460), size=(100, 30))
+        self.hitRuleText = wx.TextCtrl(self, pos=(670, 490), size=(310, 280), style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.title = title
         self.pic_path = None
         self.engine = None
@@ -115,10 +101,10 @@ class MainFrame(wx.Frame):
 
     def open_picture(self, event):
         file_wildcard = 'picture file(*.png)|*.png|All files(*.*)|*.*'
-        dlg = wx.FileDialog(self, 'Open Picture File', (os.getcwd() + '/../test'), style=wx.FD_OPEN , wildcard=file_wildcard)
+        dlg = wx.FileDialog(self, 'Mở File Ảnh', (os.getcwd() + '/../test'), style=wx.FD_OPEN , wildcard=file_wildcard)
         if dlg.ShowModal() == wx.ID_OK:
             self.pic_path = dlg.GetPath()
-            self.SetTitle(self.title + ' -- Shape from: ' + re.findall(r'test/(.*)$', dlg.GetPath())[0])
+            self.SetTitle(self.title + ' -- Nguồn ảnh: ' + dlg.GetPath())
         else:
             dlg.Destroy()
             return
@@ -188,5 +174,5 @@ class MainFrame(wx.Frame):
 
 if __name__ == '__main__':
     app = wx.App()
-    MainFrame(None, -1, title='Shape Detector', size=(1000, 790))
+    MainFrame(None, -1, title='Nhận diện hình học', size=(1000, 850))
     app.MainLoop()
