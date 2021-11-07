@@ -1,23 +1,8 @@
-#!/usr/bin/python
-# encoding:utf-8
-# -*- Mode: Python -*-
-# Author: Soros Liu <soros.liu1029@gmail.com>
-
-# ==================================================================================================
-# Copyright 2016 by Soros Liu
-#
-#                                                                          All Rights Reserved
-"""
-
-"""
 import re
 import sys
 sys.path.append('..')
 from basic.basic_rule import Rule
 from Picture_handler.cv_handler2 import Handler, FactGenerator
-
-__author__ = 'Soros Liu'
-
 
 re_a_rule = re.compile(r'(\{.*?\})')
 re_if_part = re.compile(r'^\{IF:\s+(\[.*?\])')
@@ -56,6 +41,7 @@ class Engine:
         self.matched_facts = {}
         self.hit_rules = {}
 
+    #Thêm điều kiện vào hàng đợi
     def push_condition_stack(self, condition):
         self.condition_stack.append(condition)
 
@@ -86,6 +72,7 @@ class Engine:
                 return matched
         return matched
 
+    #Tham số con truyền vào điều kiện hình học cần kiểm tra
     def __hit_consequent__(self, cons, contour_index):
         hit = False
         for rule in self.rule_library:
@@ -99,6 +86,7 @@ class Engine:
                 break
         return hit
 
+    # Đặt mục tiêu kiểm tra vào stack
     def goal(self, target):
         self.target = target
         self.condition_stack = []
@@ -106,14 +94,15 @@ class Engine:
         self.hit_rules = {}
         self.push_condition_stack(target)
 
+    # Chạy công cụ suy luận 
+    # Tham số là id biên đã được tính
     def run(self, contour_index):
         self.matched_facts['Contour' + str(contour_index)] = []
         self.hit_rules['Contour' + str(contour_index)] = []
         found = True
         while self.condition_stack:
-            # test
-            # print(self.condition_stack)
-            cons = self.pop_condition_stack()
+            print(self.condition_stack)
+            cons = self.pop_condition_stack() #Lấy điều kiện trong stack
             if not self.__hit_consequent__(cons, contour_index):
                 found = False
                 break
@@ -140,14 +129,15 @@ class Engine:
 
 def setup_engine(image_source):
     handler = Handler(image_source)
-    handler.generate_contour_dict()
-    generator = FactGenerator(handler.contour_dict)
+    handler.generate_contour_dict() # Lấy các đường biên thành dictionary
+    generator = FactGenerator(handler.contour_dict) #sinh ra các fact
     generator.generate_fact()
     r = read_rules('rules.txt')
-    e = Engine(r, generator.handled_facts)
+    print(r)
+    e = Engine(r, generator.handled_facts) #tạo mới 1 công cụ suy luận bao gồm luật và fact đã được tính toán
     return e
 
-
+#set goal cho máy phân tích
 def set_goal(e, my_goal):
     e.goal(my_goal)
 
@@ -155,7 +145,7 @@ def set_goal(e, my_goal):
 def main_run(e):
     results = []
     for i in range(len(e.fact_library)):
-        result = e.run(i)
+        result = e.run(i) # Chạy công cụ suy luận dựa vào id của fact
         results.append(result)
     return results, e.matched_facts, e.hit_rules
 

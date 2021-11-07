@@ -60,10 +60,8 @@ class FactFrame(wx.Frame):
 
 
 class MainFrame(wx.Frame):
-    """
-
-    """
-    def __init__(self, parent, id, title, size):
+    #Khởi tạo GUI với wxPython
+    def __init__(self, parent, id, title, size): 
         wx.Frame.__init__(self, parent, id, title,
                           style=wx.DEFAULT_FRAME_STYLE ^ (wx.RESIZE_BORDER | wx.MINIMIZE_BOX |
                                                           wx.MAXIMIZE_BOX))
@@ -79,10 +77,10 @@ class MainFrame(wx.Frame):
         self.showRuleButton.Bind(wx.EVT_BUTTON, self.show_rules)
         self.showFactButton = wx.Button(self, label='Show Facts', pos=(830, 160), size=(150, 30))
         self.showFactButton.Bind(wx.EVT_BUTTON, self.show_facts)
-        self.treeLabel = wx.StaticText(self, label='Bạn muốn hình nào?', pos=(830, 210), size=(120, 30))
-        self.shapeTree = wx.TreeCtrl(self, pos=(830, 240), size=(160, 200))
-        root = self.shapeTree.AddRoot('All Shapes')
-        self.add_tree_nodes(root, shape_items.tree)
+        self.treeLabel = wx.StaticText(self, label='Chọn hình dạng nhận diện', pos=(830, 210), size=(150, 30))
+        self.shapeTree = wx.TreeCtrl(self, pos=(830, 240), size=(260, 200))
+        root = self.shapeTree.AddRoot('Tất cả') #Khởi tạo cây chọn hình ảnh
+        self.add_tree_nodes(root, shape_items.tree) #Thêm các nhánh con
         self.shapeTree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.shape_chosen)
         self.shapeTree.Expand(root)
         self.show_picture('init_source.png', (10, 40))
@@ -99,9 +97,10 @@ class MainFrame(wx.Frame):
         self.contour_num = None
         self.Show()
 
+    # Mở dialog chọn ảnh
     def open_picture(self, event):
-        file_wildcard = 'picture file(*.png)|*.png|All files(*.*)|*.*'
-        dlg = wx.FileDialog(self, 'Mở File Ảnh', (os.getcwd() + '/../test'), style=wx.FD_OPEN , wildcard=file_wildcard)
+        file_wildcard = 'picture file(*.png)|*.png|All files(*.*)|*.*' # Định dạng file có thể mở
+        dlg = wx.FileDialog(self, 'Mở File Ảnh', (os.getcwd() + '/../test'), style=wx.FD_OPEN , wildcard=file_wildcard) #Khởi tạo dialog
         if dlg.ShowModal() == wx.ID_OK:
             self.pic_path = dlg.GetPath()
             self.SetTitle(self.title + ' -- Nguồn ảnh: ' + dlg.GetPath())
@@ -111,30 +110,34 @@ class MainFrame(wx.Frame):
         dlg.Destroy()
         self.show_picture(self.pic_path, (10, 30))
         self.show_picture('init_detection.png', (420, 30))
-        self.engine = setup_engine(self.pic_path)
-        self.contour_num = len(self.engine.fact_library)
+        self.engine = setup_engine(self.pic_path) # cài đặt công cụ suy diễn
+        self.contour_num = len(self.engine.fact_library) #lấy số lượng 
 
     def open_rule_editor(self, event):
-        editor = EditorFrame(self, 0, 'Rule Editor', (600, 400))
+        editor = EditorFrame(self, 0, 'Chỉnh sửa luật', (600, 400))
         editor.Show()
 
+    #Hiển thị luật 
     def show_rules(self, event):
         with open('../rules/rules.txt') as f:
             text = ''.join(f.readlines())
-        ruleFrame = RuleFrame(self, 1, 'All Rules', text)
+        ruleFrame = RuleFrame(self, 1, 'Tất cả luật', text)
         ruleFrame.Show()
 
+    #Hiển thị thông tin đã tính toán ra 1 file fact
     def show_facts(self, event):
         with open('../facts/facts.txt') as f:
             text = ''.join(f.readlines())
         factFrame = FactFrame(self, 2, 'All Facts', text)
         factFrame.Show()
 
+    #Hiển thị ảnh bitmap
     def show_picture(self, path, pos):
         pic = wx.Image(path, wx.BITMAP_TYPE_PNG).ConvertToBitmap()
         bmp = wx.StaticBitmap(self, 0, pic, pos=pos)
         bmp.Show()
 
+    #Thêm vào cây hình học
     def add_tree_nodes(self, parent_item, items):
         for item in items:
             if type(item) == str:
@@ -143,6 +146,7 @@ class MainFrame(wx.Frame):
                 newItem = self.shapeTree.AppendItem(parent_item, item[0])
                 self.add_tree_nodes(newItem, item[1])
 
+    #Lấy Item được chọn trên cây hình học
     def get_item_text(self, item):
         if self.shapeTree.GetItemText(item) == 'All Shapes':
             return
@@ -151,14 +155,15 @@ class MainFrame(wx.Frame):
         else:
             return ''
 
+    # Xử lý khi chọn vào các hình học trong cây hình học => dự đoán xem là hình nào?
     def shape_chosen(self, event):
         tmp = self.get_item_text(event.GetItem())
         if not tmp:
             return
         else:
-            chosen_shape = ('the shape is ' + tmp)
-            set_goal(self.engine, chosen_shape)
-            results, matched_facts, hit_rules = main_run(self.engine)
+            chosen_shape = ('Hình dạng là ' + tmp)
+            set_goal(self.engine, chosen_shape) # Đặt mục tiêu cho công cụ suy luận
+            results, matched_facts, hit_rules = main_run(self.engine) #Khởi chạy công cụ suy luận
             source_image = cv2.imread(self.pic_path)
             detection_image = np.zeros(source_image.shape, np.uint8)
             draw_lines(detection_image, matched_facts, self.contour_num)
@@ -174,5 +179,5 @@ class MainFrame(wx.Frame):
 
 if __name__ == '__main__':
     app = wx.App()
-    MainFrame(None, -1, title='Nhận diện hình học', size=(1000, 850))
+    MainFrame(None, -1, title='Nhận diện hình học', size=(1050, 850))
     app.MainLoop()

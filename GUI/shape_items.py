@@ -1,41 +1,31 @@
-#!/usr/bin/python
-# encoding:utf-8
-# -*- Mode: Python -*-
-# Author: Soros Liu <soros.liu1029@gmail.com>
-
-# ==================================================================================================
-# Copyright 2016 by Soros Liu
-#
-#                                                                          All Rights Reserved
-"""
-
-"""
-__author__ = 'Soros Liu'
+# Mảng cây hình học theo tiếng anh và tiếng việt
 tree1 = [
-    ['三角形', [
-        '锐角三角形',
-        '直角三角形',
-        '钝角三角形',
-        ['等腰三角形', [
-            '等腰直角三角形',
-            '等腰锐角三角形',
-            '等腰钝角三角形',
+    ['hình tam giác', [
+        'Tam giác nhọn',
+        'Tam giác vuông',
+        'Tam giác tù',
+        ['Tam giác cân', [
+            'Tam giác vuông cân',
+            'Tam giác cân và nhọn',
+            'Tam giác cân và tù',
         ]],
-        '等边三角形'
+        'Tam giác đều'
         ]],
-    ['四边形', [
-        '平行四边形', [
-            '矩形', [
-                '正方形',
+    ['Tứ giác', [
+        ['Hình bình hành', [
+            ['Hình chữ nhật', [
+                'Hình vuông',
             ]],
-        '梯形', [
-            '等腰梯形',
-            '直角梯形',
-            ]]],
-    ['五边形', [
-        '正五边形']],
-    ['六边形', [
-        '正六边形']],
+            'Hình thoi',
+        ]],
+        ['Hình thang', [
+            'Hình thang cân',
+            'Hình thang vuông',
+            ]]]],
+    ['Hình ngũ giác', [
+        'Ngũ giác đều']],
+    ['Lục giác', [
+        'Lục giác đều']],
     ]
 
 tree = [

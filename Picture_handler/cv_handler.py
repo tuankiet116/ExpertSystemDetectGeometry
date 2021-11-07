@@ -10,7 +10,7 @@
 """
 not used in this project .... sad .....
 """
-from cv2.cv import *
+from cv2 import *
 import math
 __author__ = 'Soros Liu'
 

@@ -1,25 +1,14 @@
-#!/usr/bin/python
-# encoding:utf-8
-# -*- Mode: Python -*-
-# Author: Soros Liu <soros.liu1029@gmail.com>
-
-# ==================================================================================================
-# Copyright 2016 by Soros Liu
-#
-#                                                                          All Rights Reserved
-"""
-
-"""
 import cv2
 import math
 
-__author__ = 'Soros Liu'
+from numpy.core.fromnumeric import shape
 
 
+#tính chiều dài của đường thẳng
 def calculate_line_length(l):
     return math.sqrt((l[0][0] - l[1][0]) ** 2 + (l[0][1] - l[1][1]) ** 2)
 
-
+#tính góc
 def calculate_line_angle(l):
     try:
         k = float((l[0][1] - l[1][1])) / float((l[0][0] - l[1][0]))
@@ -28,11 +17,10 @@ def calculate_line_angle(l):
     finally:
         return math.degrees(math.atan(k))
 
-
+###############################################
+# Lấy 2 tọa độ tính độ dài và góc giữa 2 tọa độ với trục x
+###############################################
 class ContourLine:
-    """
-
-    """
 
     def __init__(self, point1, point2):
         self.point1 = point1
@@ -44,20 +32,23 @@ class ContourLine:
         return '(%d, %d)-->(%d, %d): Length: %.2f, Angle:%.2f' % \
                (self.point1[0], self.point1[1], self.point2[0], self.point2[1], self.length, self.angle)
 
-
+#tính toán và trả về biên xấp xỉ với biên chuẩn
 def get_contours(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-    contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #convert sang ảnh màu xám
+    ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY) #phân ngưỡng trắng đen trả về ảnh nhị phân đã được phân ngưỡng
+    contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) #tìm biên
     for i in range(1, len(contours)):
-        approx = cv2.approxPolyDP(contours[i], 0.01 * cv2.arcLength(contours[i], True), True)
+        epsilon = 0.01 * cv2.arcLength(contours[i], True) #tính chu vi của hình => epsilon = 1% của chu vi
+        approx = cv2.approxPolyDP(contours[i], epsilon, True)
         contours[i] = approx
     return contours
 
 
+# trả về list chuỗi gồm các điểm đã được tính độ dài và góc
 def generate_lines(contour):
     lines = []
     for i in range(len(contour) - 1):
+        print(ContourLine((contour[i][0][0], contour[i][0][1]), (contour[i + 1][0][0], contour[i + 1][0][1])))
         lines.append(ContourLine((contour[i][0][0], contour[i][0][1]), (contour[i + 1][0][0], contour[i + 1][0][1])))
     lines.append(ContourLine((contour[-1][0][0], contour[-1][0][1]), (contour[0][0][0], contour[0][0][1])))
     return lines
@@ -65,17 +56,17 @@ def generate_lines(contour):
 
 class Handler:
     """
-
+    # lấy biên và trả về danh sách biên đã được tính
     """
 
     def __init__(self, source):
         self.src = cv2.imread(source)
-        self.contours = get_contours(self.src)[1:]  # contours are in clock-wise order
+        self.contours = get_contours(self.src)[1:]  # các đường viền theo thứ tự đồng hồ
         self.contour_dict = {}
 
     def generate_contour_dict(self):
         for i in range(len(self.contours)):
-            self.contour_dict[i] = generate_lines(self.contours[i])
+            self.contour_dict[i] = generate_lines(self.contours[i]) #danh sách các fact đã được tính
 
 
 class Fact:
@@ -141,7 +132,7 @@ def get_included_angle(line1, line2):
 def is_equal(line1, line2):
     return abs(line1.length - line2.length) < equal_threshold
 
-
+#Kiểm tra song song
 def is_parallel(line1, line2):
     return True if get_included_angle(line1, line2) == 'parallel' else False
 
@@ -229,6 +220,7 @@ def right_angles_count(facts):
         facts.append(Fact(str(count) + ' angles are right angle', angles))
 
 
+#trả về các kiểm tra hình học
 def about_angle(facts, line1, line2):
     if is_parallel(line1, line2):
         facts.append(Fact('2 lines are parallel', [line1, line2]))
@@ -262,7 +254,7 @@ def generate_contour_facts(lines):
 
 class ContourFact:
     """
-
+    #Trả về chuỗi góc và cạnh để điền vào file(bước này đã được tính toán xong)
     """
 
     def __init__(self, line_num, line_facts, angle_facts):
@@ -283,7 +275,7 @@ class ContourFact:
 
 class FactGenerator:
     """
-
+    #Tính toán và viết các fact(sự kiện) vào file fact.txt
     """
 
     def __init__(self, contour_dict):
