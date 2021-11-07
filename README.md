@@ -70,8 +70,8 @@ Cấu trúc cụ thể như sau:
 ! [cấu trúc] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/readme_picture/osystem.png)
 Hệ thống chuyên gia phát hiện đồ họa cũng bao gồm 5 phần: 
 	- [Cơ sở kiến ​​thức] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/rules/rules.txt), 
-	- [Cơ sở dữ liệu] (https://github .com / Sorosliu1029 / Rule-based_Expert_System / blob / master / fact / fact.txt), 
-	- [Công cụ suy luận] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/engine/inference_engine .py), 
+	- [Cơ sở dữ liệu] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/fact/fact.txt), 
+	- [Công cụ suy luận] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/engine/inference_engine.py), 
 	- [Phương tiện giải thích, Giao diện người dùng] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/GUI/main_frame.py).
 Các thư mục dự án tương ứng là quy tắc, dữ kiện, công cụ, GUI.
 Ngoài ra, do đặc thù của đồ họa, tệp dự án còn chứa [Bộ xử lý hình ảnh] (https://github.com/Sorosliu1029/Rule-based_Expert_System/blob/master/Picture_handler/cv_handler2.py).
