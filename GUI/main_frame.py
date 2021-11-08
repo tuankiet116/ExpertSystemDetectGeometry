@@ -113,6 +113,7 @@ class MainFrame(wx.Frame):
         self.engine = setup_engine(self.pic_path) # cài đặt công cụ suy diễn
         self.contour_num = len(self.engine.fact_library) #lấy số lượng 
 
+    #Mở trang thêm luật
     def open_rule_editor(self, event):
         editor = EditorFrame(self, 0, 'Chỉnh sửa luật', (600, 400))
         editor.Show()

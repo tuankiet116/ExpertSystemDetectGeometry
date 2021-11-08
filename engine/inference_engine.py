@@ -13,9 +13,7 @@ re_description_part = re.compile(r'DESCRIPTION:\s+(\'.*?\')')
 def generate_a_rule(rule):
     if_part = re_if_part.findall(rule)[0]
     if_part = re.sub(', ', ',', if_part)
-    if_part = re.sub('\[', '', if_part)
-    if_part = re.sub(']', '', if_part)
-    if_part = re.sub("'", '', if_part)
+    if_part = re.sub("\[|'|]", '', if_part)
     if_part = if_part.split(',')
     then_part = re_then_part.findall(rule)[0]
     description_part = re_description_part.findall(rule)[0]
@@ -49,9 +47,11 @@ class Engine:
     def push_condition_stack(self, condition):
         self.condition_stack.append(condition)
 
+    #Lấy điều kiện ra khỏi stack
     def pop_condition_stack(self):
         return self.condition_stack.pop()
 
+    #Lấy điều kiện trên cùng
     def top_condition_stack(self):
         try:
             return self.condition_stack[-1]
