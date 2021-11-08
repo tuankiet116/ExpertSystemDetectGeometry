@@ -5,9 +5,9 @@ id_count = 0
 class Rule:
     def __init__(self, ants, con, desc=None):
         self.id = None
-        self.antecedent = ants
-        self.consequent = con
-        self.description = desc
+        self.antecedent = ants  # Đầu vào điều kiện
+        self.consequent = con   # Kết quả tương ứng
+        self.description = desc # Mô tả
         self.__calculate_id__()
 
     #Tăng giá trị id để gán cho các luật

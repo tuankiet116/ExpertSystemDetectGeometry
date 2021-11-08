@@ -11,18 +11,22 @@ re_description_part = re.compile(r'DESCRIPTION:\s+(\'.*?\')')
 
 
 def generate_a_rule(rule):
-    if_part = ''
-    exec('if_part = ' + re_if_part.findall(rule)[0])
+    if_part = re_if_part.findall(rule)[0]
+    if_part = re.sub(', ', ',', if_part)
+    if_part = re.sub('\[', '', if_part)
+    if_part = re.sub(']', '', if_part)
+    if_part = re.sub("'", '', if_part)
+    if_part = if_part.split(',')
     then_part = re_then_part.findall(rule)[0]
     description_part = re_description_part.findall(rule)[0]
-    return Rule(if_part, then_part.strip('"\''), description_part.strip('"\''))
+    return Rule(if_part, then_part.strip('"\''), description_part.strip('"\'')) #trả về 1 đối tượng Rule 
 
 
 def separate_rules(rules):
     rule_group = re_a_rule.findall(rules)
     return list(map(generate_a_rule, rule_group))
 
-
+#Đọc rule từ file và xử lý rule vào từng đối tượng Rule()
 def read_rules(rule_file):
     with open('../rules/' + rule_file) as f:
         rules = ''.join(f.read().splitlines())
@@ -60,23 +64,27 @@ class Engine:
     def __match_facts__(self, ant, contour_index):
         facts = self.fact_library['Contour' + str(contour_index)]
         matched = False
+        #Kiểm tra cạnh
         for fact in facts.line_facts:
-            if ant == fact.fact:
+            
+            if str(ant) == fact.fact:
                 matched = True
                 self.matched_facts['Contour' + str(contour_index)].append(fact)
                 return matched
+        #Kiểm tra góc
         for fact in facts.angle_facts:
             if ant == fact.fact:
                 matched = True
                 self.matched_facts['Contour' + str(contour_index)].append(fact)
                 return matched
+
         return matched
 
-    #Tham số con truyền vào điều kiện hình học cần kiểm tra
+    #Tham số con truyền vào điều kiện hình học cần kiểm tra trả về True nếu tồn tại điều kiện có thể kiểm tra trong luật
     def __hit_consequent__(self, cons, contour_index):
         hit = False
         for rule in self.rule_library:
-            if cons == getattr(rule, 'consequent'):
+            if cons == getattr(rule, 'consequent'): #Kiểm tra thuộc tính đã chọn để kiểm tra với các consequent của luật xem có trùng khớp?
                 hit = True
                 self.hit_rules['Contour' + str(contour_index)].append(rule)
                 ants = getattr(rule, 'antecedent')
@@ -101,7 +109,6 @@ class Engine:
         self.hit_rules['Contour' + str(contour_index)] = []
         found = True
         while self.condition_stack:
-            print(self.condition_stack)
             cons = self.pop_condition_stack() #Lấy điều kiện trong stack
             if not self.__hit_consequent__(cons, contour_index):
                 found = False
@@ -133,7 +140,6 @@ def setup_engine(image_source):
     generator = FactGenerator(handler.contour_dict) #sinh ra các fact
     generator.generate_fact()
     r = read_rules('rules.txt')
-    print(r)
     e = Engine(r, generator.handled_facts) #tạo mới 1 công cụ suy luận bao gồm luật và fact đã được tính toán
     return e
 
@@ -142,6 +148,7 @@ def set_goal(e, my_goal):
     e.goal(my_goal)
 
 
+#Chạy công cụ suy luận trong đó e là 1 đối tượng công cụ suy luận
 def main_run(e):
     results = []
     for i in range(len(e.fact_library)):

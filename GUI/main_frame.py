@@ -12,7 +12,7 @@ def draw_lines(image, facts, contour_num):
     for i in range(contour_num):
         for fact in facts['Contour' + str(i)]:
             for line in fact.about:
-                cv2.line(image, line.point1, line.point2, (0, 255, 0), 2, cv2.CV_AA)
+                cv2.line(image, line.point1, line.point2, (0, 255, 0), 2)
 
 
 def get_result(results):
@@ -161,7 +161,7 @@ class MainFrame(wx.Frame):
         if not tmp:
             return
         else:
-            chosen_shape = ('Hình dạng là ' + tmp)
+            chosen_shape = ('the shape is ' + tmp)
             set_goal(self.engine, chosen_shape) # Đặt mục tiêu cho công cụ suy luận
             results, matched_facts, hit_rules = main_run(self.engine) #Khởi chạy công cụ suy luận
             source_image = cv2.imread(self.pic_path)
